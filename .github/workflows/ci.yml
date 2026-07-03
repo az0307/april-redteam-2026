@@ -175,6 +175,23 @@ jobs:
           make --dry-run help 2>&1 | head -5
           echo "✓ Makefile parses correctly"
 
+  # ── Kali MCP unit tests ───────────────────────────────────
+  test-kali-mcp:
+    name: Kali MCP Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          pip install -r kali-mcp/requirements.txt pytest
+      - name: Run tests
+        run: |
+          cd kali-mcp && python3 -m pytest -q
+
   # ── Summary ───────────────────────────────────────────────
   ci-summary:
     name: CI Summary
@@ -187,6 +204,7 @@ jobs:
       - validate-playbooks
       - python-syntax
       - validate-makefile
+      - test-kali-mcp
     runs-on: ubuntu-latest
     if: always()
     steps:
