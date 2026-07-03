@@ -84,9 +84,12 @@ jobs:
           echo "✓ .env not in git"
       - name: Check loot/ not committed
         run: |
-          if git ls-files | grep -q "^loot/[^R]"; then
+          # Only README, REPORT_TEMPLATE and the mission-template scaffold
+          # are allowed under loot/. Fail if any other loot file is tracked.
+          extra=$(git ls-files loot/ | grep -Ev "README|REPORT_TEMPLATE|mission-template" || true)
+          if [ -n "$extra" ]; then
             echo "ERROR: loot/ contents committed — check .gitignore"
-            git ls-files loot/ | grep -v "README\|REPORT_TEMPLATE\|mission-template"
+            echo "$extra"
             exit 1
           fi
           echo "✓ loot/ contents not committed"
