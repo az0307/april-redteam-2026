@@ -274,3 +274,23 @@ FAST_LLM_MODEL=deepseek-chat
 ---
 
 *April 2026 | Passive OSINT only — never touch systems directly via AutoGPT*
+
+---
+
+## Evidence Collection
+
+Capture evidence continuously across every PHASE of the engagement. Store all
+artifacts under `loot/<mission>/` using the standard layout so `make report`
+can assemble them:
+
+| Artifact | Location | Notes |
+|----------|----------|-------|
+| Screenshots | `loot/<mission>/screenshots/` | Timestamped; one per finding |
+| Raw tool output | `loot/<mission>/scans/` | nmap XML, tool logs, JSON |
+| Exploit PoCs | `loot/<mission>/exploits/` | Minimal reproducible steps only |
+| Running findings | `loot/<mission>/findings.md` | Newest-first, per severity |
+
+**Evidence handling rules**
+- Record the exact command, target, and UTC timestamp for each finding.
+- Redact real credentials/PII — keep proof-of-concept scope only.
+- Never commit `loot/` (git-ignored); archive with `make backup` before teardown.
