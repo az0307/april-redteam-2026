@@ -1,5 +1,7 @@
 # Kali MCP Server runtime dependencies
-mcp>=1.2.0            # Model Context Protocol SDK — provides mcp.server.fastmcp.FastMCP
+# Cap mcp below 2.0: the FastMCP entrypoint lives at mcp.server.fastmcp in the
+# 1.x line; mcp 2.0 relocated it and breaks `from mcp.server.fastmcp import FastMCP`.
+mcp>=1.2.0,<2.0      # Model Context Protocol SDK — provides mcp.server.fastmcp.FastMCP
 paramiko>=3.4.0      # SSH transport to the Kali host
 python-dotenv>=1.0.0 # .env loading
 pydantic>=2.6.0      # tool-argument validation (used by FastMCP)
