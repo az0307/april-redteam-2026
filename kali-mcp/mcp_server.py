@@ -5,11 +5,9 @@ Exposes Kali Linux as MCP tools for AI agents (Claude, etc.)
 Part of the April 2026 Red Team Stack
 """
 
-import asyncio
 import logging
 import os
 import sys
-import subprocess
 from typing import Any, Optional
 
 import paramiko
