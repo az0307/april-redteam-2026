@@ -39,6 +39,13 @@ Claude Code (Opus/Sonnet) — Orchestrator Brain
 
 ## Quick Start
 
+> **Incomplete checkout:** the default branch does not include the `scripts/`
+> directory referenced by the Makefile, or the `hexstrike-ai`, `stride-gpt`,
+> and `vulngpt-v2` build contexts referenced by Compose. The commands below
+> cannot complete until the appropriate sources and scripts are supplied and
+> reviewed. `docker compose config --quiet` validates the configuration only;
+> it does not build or start these services.
+
 ```bash
 git clone https://github.com/0x4m4/april-redteam-2026
 cd april-redteam-2026
