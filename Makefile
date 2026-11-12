@@ -133,7 +133,7 @@ bench: ## Run PentestGPT XBOW benchmarks (first 10)
 		python3 run_benchmarks.py --range 1-10 --pattern-flag
 
 ## ── MISSIONS ───────────────────────────────────────────────────────
-New-mission: ## Create new engagement (usage: make new-mission NAME=client TARGET=target.com TYPE=web)
+new-mission: ## Create new engagement (usage: make new-mission NAME=client TARGET=target.com TYPE=web)
 	@./scripts/new-mission.sh "$(NAME)" "$(TARGET)" "$(TYPE)"
 
 report: ## Generate pentest report from loot (usage: make report MISSION=client-name)
