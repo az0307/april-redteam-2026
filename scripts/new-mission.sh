@@ -18,6 +18,12 @@ if [[ -z "$NAME" || -z "$TARGET" ]]; then
     exit 1
 fi
 
+# A mission name is one directory component and a literal sed replacement.
+if [[ ! "$NAME" =~ ^[A-Za-z0-9][A-Za-z0-9_-]*$ ]]; then
+    echo "[!] NAME must start with a letter or digit and contain only letters, digits, _ or -." >&2
+    exit 1
+fi
+
 # Resolve repo root regardless of where the script is invoked from.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MISSION_DIR="$ROOT/loot/$NAME"

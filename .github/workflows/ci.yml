@@ -75,41 +75,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for secret scanning
-      - name: Check .env not committed
-        run: |
-          if git ls-files | grep -q "^\.env$"; then
-            echo "ERROR: .env committed — remove immediately"
-            exit 1
-          fi
-          echo "✓ .env not in git"
-      - name: Check loot/ not committed
-        run: |
-          # Only README, REPORT_TEMPLATE and the mission-template scaffold
-          # are allowed under loot/. Fail if any other loot file is tracked.
-          extra=$(git ls-files loot/ | grep -Ev "README|REPORT_TEMPLATE|mission-template" || true)
-          if [ -n "$extra" ]; then
-            echo "ERROR: loot/ contents committed — check .gitignore"
-            echo "$extra"
-            exit 1
-          fi
-          echo "✓ loot/ contents not committed"
-      - name: Scan for API key patterns
-        run: |
-          # Scan tracked files for *real* key shapes. Exclude the env
-          # placeholder template and this workflow file, which legitimately
-          # contain example values / the detection patterns themselves.
-          files=$(git ls-files | grep -vE '^(\.env\.example|\.github/workflows/ci\.yml)$')
-          if echo "$files" | xargs grep -lE \
-              -e "sk-ant-api[0-9]{2}-[A-Za-z0-9_-]{24}" \
-              -e "sk-proj-[A-Za-z0-9_-]{24}" \
-              -e "AKIA[0-9A-Z]{16}" \
-              -e "ghp_[A-Za-z0-9]{36}" \
-              -e "sk-[A-Za-z0-9]{48}" \
-              2>/dev/null; then
-            echo "ERROR: Potential API keys found in tracked files"
-            exit 1
-          fi
-          echo "✓ No API key patterns detected"
+      - name: Scan every tracked file for secrets and engagement data
+        run: python3 ci/check_secrets.py
 
   # ── Validate YAML configs ─────────────────────────────────
   validate-yaml:
@@ -179,7 +146,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check Makefile syntax
         run: |
-          make --dry-run help 2>&1 | head -5
+          make --dry-run help
           echo "✓ Makefile parses correctly"
 
   # ── Kali MCP unit tests ───────────────────────────────────
@@ -199,6 +166,19 @@ jobs:
         run: |
           cd kali-mcp && python3 -m pytest -q
 
+  test-ci-safety:
+    name: CI Safety Regression Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependency
+        run: pip install PyYAML
+      - name: Test CI failure handling and safe mission paths
+        run: python3 -m unittest discover -s tests -v
+
   # ── Summary ───────────────────────────────────────────────
   ci-summary:
     name: CI Summary
@@ -212,10 +192,21 @@ jobs:
       - python-syntax
       - validate-makefile
       - test-kali-mcp
+      - test-ci-safety
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Report result
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
         run: |
-          echo "CI pipeline complete"
-          echo "All checks must pass before merging to main"
+          python3 << 'PYEOF'
+          import json, os, sys
+          needs = json.loads(os.environ["NEEDS_JSON"])
+          failed = [name for name, job in needs.items()
+                    if job.get("result") != "success"]
+          if not needs or failed:
+              print("CI failed or incomplete: " + ", ".join(failed))
+              sys.exit(1)
+          print("All required CI jobs passed")
+          PYEOF
