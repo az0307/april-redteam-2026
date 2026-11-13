@@ -4,8 +4,8 @@
 # Usage: make <target>
 # ─────────────────────────────────────────────────────────────
 
-.PHONY: help install install-all update start stop restart logs \
-        health status clean new-mission report backup rotate-tokens \
+.PHONY: help install install-all install-kali update start stop restart logs \
+        health status clean new-mission report backup rotate-tokens test lint \
         kali-shell hexstrike-status pentestgpt-config vulngpt-start \
         stride-ui grafana bench ctf osint
 
@@ -63,6 +63,16 @@ update: ## Pull latest for all cloned repos
 	done
 	@docker compose pull 2>/dev/null || true
 	@echo "$(GRN)[+] All repos updated$(NC)"
+
+## ── QUALITY ───────────────────────────────────────────────────────
+test: ## Run the Kali MCP unit tests
+	@echo "$(BLU)[*] Running Kali MCP tests...$(NC)"
+	@cd kali-mcp && python3 -m pytest -q
+
+lint: ## Shellcheck all shell scripts
+	@echo "$(BLU)[*] Linting shell scripts...$(NC)"
+	@find scripts/ kali-mcp/ -name "*.sh" -print0 | xargs -0 shellcheck --severity=warning
+	@echo "$(GRN)[+] Shell scripts clean$(NC)"
 
 ## ── STACK ─────────────────────────────────────────────────────────
 start: ## Start all Docker services
@@ -133,7 +143,7 @@ bench: ## Run PentestGPT XBOW benchmarks (first 10)
 		python3 run_benchmarks.py --range 1-10 --pattern-flag
 
 ## ── MISSIONS ───────────────────────────────────────────────────────
-New-mission: ## Create new engagement (usage: make new-mission NAME=client TARGET=target.com TYPE=web)
+new-mission: ## Create new engagement (usage: make new-mission NAME=client TARGET=target.com TYPE=web)
 	@./scripts/new-mission.sh "$(NAME)" "$(TARGET)" "$(TYPE)"
 
 report: ## Generate pentest report from loot (usage: make report MISSION=client-name)

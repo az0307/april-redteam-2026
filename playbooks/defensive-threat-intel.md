@@ -341,3 +341,21 @@ loot/[MISSION]/
 ---
 
 *April 2026 | Understand the adversary. Defend the client. Document everything.*
+
+---
+
+## Phased Response Model
+
+Map each detection to a defensive PHASE so client briefings stay actionable:
+
+| PHASE | Focus | Output |
+|-------|-------|--------|
+| PHASE 1 — Detect | SIEM signatures, log correlation | Alert rules |
+| PHASE 2 — Contain | Block indicators, isolate hosts | Containment runbook |
+| PHASE 3 — Eradicate | Remove access, rotate secrets | Remediation list |
+| PHASE 4 — Recover | Restore services, validate | Recovery report |
+| PHASE 5 — Lessons | Post-incident review | Hardening backlog |
+
+### Evidence
+Preserve alert exports, PCAPs, and log excerpts as evidence for the client's
+incident record before remediation changes the environment.

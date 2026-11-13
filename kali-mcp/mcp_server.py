@@ -5,11 +5,9 @@ Exposes Kali Linux as MCP tools for AI agents (Claude, etc.)
 Part of the April 2026 Red Team Stack
 """
 
-import asyncio
 import logging
 import os
 import sys
-import subprocess
 from typing import Any, Optional
 
 import paramiko
@@ -29,7 +27,7 @@ logging.basicConfig(level=logging.INFO, stream=sys.stderr,
 log = logging.getLogger("kali-mcp")
 
 # ── FastMCP server ────────────────────────────────────────────
-mcp = FastMCP("kali-mcp", description="Kali Linux SSH+PTY MCP Server — live terminal access")
+mcp = FastMCP("kali-mcp", instructions="Kali Linux SSH+PTY MCP Server — live terminal access")
 
 # ── SSH session store ─────────────────────────────────────────
 _sessions: dict[str, Any] = {}
@@ -176,8 +174,8 @@ def kali_tmux_read(session_name: str, lines: int = 50) -> str:
 @mcp.tool()
 def kali_write_file(path: str, content: str) -> str:
     """Write a file to the Kali system. Useful for MSF resource scripts, payloads, etc."""
-    # Escape single quotes in content
-    escaped = content.replace("'", "'\"'\"'")
+    # Quoted heredoc delimiter => content is written literally, no shell
+    # expansion of $, backticks, etc. inside it.
     cmd = f"cat > '{path}' << 'KALI_MCP_EOF'\n{content}\nKALI_MCP_EOF"
     return run_ssh_command(cmd)
 
