@@ -4,6 +4,8 @@
 
 # Environment — NEVER commit
 .env
+.env.*
+!.env.example
 *.env.local
 
 # Loot — contains evidence, credentials, shells
@@ -15,6 +17,11 @@ loot/
 hexstrike-ai/
 pentestagent/
 pentestthinking/
+pentestgpt/
+stride-gpt/
+autogpt/
+vulngpt-v2/
+backups/
 
 # Python
 __pycache__/

@@ -39,6 +39,12 @@ Claude Code (Opus/Sonnet) — Orchestrator Brain
 
 ## Quick Start
 
+> **External sources required:** Compose references the `hexstrike-ai`,
+> `stride-gpt`, and `vulngpt-v2` build contexts. The install scripts do not
+> supply every build context, so review and supply the missing sources before
+> building or starting the stack. `docker compose config --quiet` validates
+> configuration only; it does not build or start services.
+
 ```bash
 git clone https://github.com/0x4m4/april-redteam-2026
 cd april-redteam-2026
